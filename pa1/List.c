@@ -143,7 +143,7 @@ int length(List L){
       exit(1);
   }
   
-  return L->length;
+  return (L->length);
 
 }
 
@@ -157,7 +157,7 @@ int index(List L){
       exit(1);
   }
   
-  return L->index;
+  return(L->index);
 
 }
 
@@ -173,7 +173,7 @@ int front(List L){
   
   if(L->length > 0){
     
-    return L->front->value;
+    return(L->front->value);
   
   }
   
@@ -193,7 +193,7 @@ int back(List L){
   
   if(L->length > 0){
     
-    return L->back->value;
+    return(L->back->value);
   
   }
   
@@ -214,7 +214,7 @@ int get(List L){
   
   if(L->length > 0 && L->index >= 0){
     
-    return L->cursor->value;
+    return(L->cursor->value);
   
   }
   
@@ -249,6 +249,8 @@ bool equals(List A, List B){
     //if the equivalent nodes dont have the same numerical value, false
     if(a->value != b->value){
       
+      node_delete(&a);
+      node_delete(&b);
       return false;
     
     }
@@ -456,6 +458,8 @@ void prepend(List L, int x){
     }
   
   }
+  
+  //node_delete(&temp);
 
 }
 
@@ -496,6 +500,8 @@ void append(List L, int x){
     L->length++;
   
   }
+  
+  //node_delete(&temp);
 
 }
 
@@ -538,6 +544,7 @@ void insertBefore(List L, int x){
       L->length++;
     
       L->index++;
+      
     
     }
   

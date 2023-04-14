@@ -51,10 +51,10 @@ int main(int argc, char** argv){
   
   }
   
-  printf("number of lines is %d\n", n);
+  //printf("number of lines is %d\n", n);
   
   //create string array of length n
-  char *arr = (char*) malloc( sizeof(char) * n);
+  char **arr = malloc( sizeof(char *) * n);
   
   
   //infile reset
@@ -66,16 +66,24 @@ int main(int argc, char** argv){
   
   while(fgets(buf, 300, infile) != NULL){
     
-    printf("buf value is %s\n", buf);
+    //printf("buf value is %s\n", buf);
     
-    strcpy(&arr[lines], buf);
+    arr[lines] = (char*)malloc(strlen(buf) +1);
+    
+    strcpy(arr[lines], buf);
     
     //buf = buf[300];
     lines++;
     
   }
   
-  printf("string array is %s\n", arr);
+  //printf("string array is %s\n", arr[0]);
+  
+  //printf("string array is %s\n", arr[1]);
+  
+  //printf("string array is %s\n", arr[2]);
+  
+  //printf("string array is %s\n", arr[3]);
   
   //create list
   List l = newList();
@@ -85,7 +93,7 @@ int main(int argc, char** argv){
   
     moveBack(l);
     
-    while(index(l) >-1 && strcmp(&arr[i], &arr[get(l)]) < 0){
+    while(index(l) >-1 && strcmp(arr[i], arr[get(l)]) < 0){
       
       movePrev(l);
       
@@ -109,14 +117,24 @@ int main(int argc, char** argv){
   
   while (index(l) > -1){
   
-    fprintf(outfile, "%s", &arr[get(l)]);
+    fprintf(outfile, "%s", arr[get(l)]);
     
     moveNext(l);
     
   }
   
   //free arr
+  for(int i=0; i<n; i++){
+  
+    free(arr[i]);
+    
+    arr[i] = NULL;
+  
+  }
+  
+  
   free(arr);
+  arr=NULL;
 
   // free list
   freeList(&l);

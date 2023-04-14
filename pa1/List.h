@@ -47,6 +47,8 @@ void printList(FILE* out, List L);
 
 void deleteFront(List L);
 
+void deleteBack(List L);
+
 void delete(List L);
 
 List copyList(List L);

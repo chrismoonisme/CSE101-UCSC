@@ -709,7 +709,7 @@ void deleteBack(List L){
     }else{
     
       //save front value as a temp
-      Node temp = L->front;
+      Node temp = L->back;
   
       L->back = L->back->prev;
     

@@ -322,18 +322,31 @@ void addArc(Graph G, int u, int v){
       append(G->neighbors[u], v);
     
     //else, check if if v is the front element in the list, if so dont do anything cause its already in the list
-    }else if(v != front(G->neighbors[u]) ){
-    
-      //if v is greater than the first value in the list, v gets appended, else prepended
-      if(v > front(G->neighbors[u]) ){
+    }else{
       
-        append(G->neighbors[u], v);
+        moveFront(G->neighbors[u]);
       
-      }else{
+        
+        while(index(G->neighbors[u]) > -1 &&  get(G->neighbors[u]) < v ){
+        
+          moveNext(G->neighbors[u]);
+          
+          
+        }
+        
+        if(index(G->neighbors[u]) != -1){
+        
+          insertBefore(G->neighbors[u], v);
+        
+        }else{
+        
+          append(G->neighbors[u], v);
+        
+        }
       
-        prepend(G->neighbors[u], v);
-    
-      }
+      
+      
+
       
     }
   
@@ -403,7 +416,11 @@ void printGraph(FILE* out, Graph G){
     }
     
     //newline
-    fprintf(out, "\n");
+    if(i != getOrder(G)){
+    
+      fprintf(out, "\n");
+    
+    }
   
   }
 

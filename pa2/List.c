@@ -261,6 +261,9 @@ bool equals(List A, List B){
     
   }
   
+  node_delete(&a);
+  node_delete(&b);
+  
   return true;
   
 }
@@ -435,6 +438,8 @@ void prepend(List L, int x){
     L->back=temp;
     
     L->length++;
+    
+    //node_delete(&temp);
   
   }else{
   
@@ -484,6 +489,8 @@ void append(List L, int x){
     L->back = temp;
     
     L->length++;
+    
+    //node_delete(&temp);
   
   }else{
   
@@ -621,6 +628,8 @@ void printList(FILE* out, List L){
     temp = temp->next;
   
   }
+  
+  node_delete(&temp);
   
 }
 
@@ -839,6 +848,7 @@ List copyList(List L){
     append(L2, N->value);
     N = N->next;
   }
+
   return L2;
   
 }

@@ -1,12 +1,6 @@
-#------------------------------------------------------------------------------
-#  Makefile for CSE 101 Programming Assignment 3
-#
-#  make                     makes FindComponents
-#  make GraphClient         makes GraphClient
-#  make clean               removes binaries
-#  make checkFind           tests FindComponents for memory leaks on in3
-#  make checkClient         tests GraphClient for memory leaks
-#------------------------------------------------------------------------------
+#Christopher Moon
+#ckmoon
+#pa3
 
 BASE_SOURCES   = Graph.c List.c
 BASE_OBJECTS   = Graph.o List.o

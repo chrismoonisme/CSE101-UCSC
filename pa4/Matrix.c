@@ -161,8 +161,8 @@ int equals(Matrix A, Matrix B){
     
     while(index(A->grid[i]) >= 0){
     
-      Entry a = *(Entry*)get(A->grid[i]);
-      Entry b = *(Entry*)get(B->grid[i]);
+      Entry a = (Entry)get(A->grid[i]);
+      Entry b = (Entry)get(B->grid[i]);
       
       if(a->value != b->value ){
       
@@ -173,8 +173,8 @@ int equals(Matrix A, Matrix B){
       moveNext(A->grid[i]);
       moveNext(B->grid[i]);
       
-      entry_delete(&a);
-      entry_delete(&b);
+      //entry_delete(&a);
+      //entry_delete(&b);
     
     }
 
@@ -322,26 +322,27 @@ Matrix copy(Matrix A){
   
   //loop through array of lists in B (Lists should all be empty at first)
   for(int i = 0; i < size(B); i++){
+  
     
-    //loop though As list i
-    moveFront(A->grid[i]);
+      //loop though As list i
+      moveFront(A->grid[i]);
     
-    while(index(B->grid[i]) >= 0){
+      while(index(A->grid[i]) >= 0){
       
-      //get corresponding A entry 
-      Entry e = *(Entry*)get(A->grid[i]);
+        //get corresponding A entry 
+        Entry e = (Entry)get(A->grid[i]);
       
-      //append A entry to B's list
-      append(B->grid[i], e);
+        //append A entry to B's list
+        append(B->grid[i], e);
       
-      //move next in As list
-      moveNext(A->grid[i]);
+        //move next in As list
+        moveNext(A->grid[i]);
    
-      entry_delete(&e);
+        //entry_delete(&e);
+    
+      }
     
     }
-    
-  }
   
   return B;
 
@@ -359,7 +360,7 @@ Matrix transpose(Matrix A){
     //loop though empty list i
     moveFront(A->grid[i]);
     
-    while(index(B->grid[i]) >= 0){
+    while(index(A->grid[i]) >= 0){
     
     
       //EX
@@ -369,13 +370,12 @@ Matrix transpose(Matrix A){
       
       //get corresponding A entry
       // row 2: (3, 1)
-      Entry e = *(Entry*)get(A->grid[i]);
+      Entry e = (Entry)get(A->grid[i]);
       
       //transpose entry
       // (2, 1);
-      Entry t = *(Entry*)get(A->grid[i]);
+      Entry t = entry_create(i+1, e->value);
       
-      t->column = i;
       
       //append TRANSPOSE into B
       // row 3: (2, 1);
@@ -384,8 +384,8 @@ Matrix transpose(Matrix A){
       //move next in Bs list
       moveNext(A->grid[i]);
    
-      entry_delete(&e);
-      entry_delete(&t);
+      //entry_delete(&e);
+      //entry_delete(&t);
     
     }
     

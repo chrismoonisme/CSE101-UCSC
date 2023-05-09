@@ -218,6 +218,7 @@ void* get(List L){
   
   }
   
+  printf("bad get call\n");
   exit(1);
   
 }
@@ -315,7 +316,7 @@ void set(List L, void* x){
   
   }
   
-  //exit(1);
+  exit(1);
 
 }
 
@@ -333,6 +334,7 @@ void moveFront(List L){
   
     L->cursor = L->front; 
     
+    //printf("set index\n");
     //index starts at 0
     L->index  = 0;
   

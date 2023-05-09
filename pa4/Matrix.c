@@ -107,8 +107,8 @@ void freeMatrix(Matrix* pM){
   
   }
   
-  free(pM);
-  pM = NULL;
+  free(*pM);
+  *pM = NULL;
 
 }
 
@@ -121,11 +121,12 @@ int size(Matrix M){
 
 int NNZ(Matrix M){
 
-  int elements;
+  int elements = 0;
   
   //loop through array of lists
-  for(int i =0; i <M->order; i++){
-  
+  for(int i =0; i < M->order; i++){
+    
+    //printf("list\n");
     //get length of each list and add length to number of non zero elements
     elements += length(M->grid[i]);
   
@@ -200,30 +201,110 @@ void makeZero(Matrix M){
 
 //change entry
 void changeEntry(Matrix M, int i, int j, double x){
-
+  
+  //printf("change entry run\n");
+  
   if( (1 <= i && i <=size(M)) && (1<=j && j <= size(M)) ){
   
-   //loop through list i
-   
-   moveFront(M->grid[i-1]);
-   
-   while(index(M->grid[i-1]) >= 0){
-   
-    Entry e = *(Entry*)get(M->grid[i-1]);
+    //track whether the entry exists
+    bool exist = false;
     
-    //if column matches j, change value
-    if(e->column == j){
+    //if list isnt 0
+    if(length(M->grid[i-1]) > 0){
+      
+      //printf("list is nonzero in length\n");
+      
+      //loop through list
+      moveFront(M->grid[i-1]);
+      
+      //printf("moving to front, index is %d\n", index(M->grid[i-1]));
+      
     
-      e->value = x;
+      while(index(M->grid[i-1]) >= 0 ){
+      
+        //printf("running while loop\n");
+      
+        Entry temp = (Entry)get(M->grid[i-1]);
+        
+        //printf("grabbing element, value %d, %f\n", temp->column, temp->value);
+        
+        
+        //if an entry exists in the list with the same column
+        if(temp->column == j){
+          
+          exist = true;
+          
+          //printf("an element already exists in list, changing value\n");
+          
+          //if x is zero, delete the entry
+          if(x == 0.0){
+          
+            printf("set to 0 means delete\n");
+            //entry_delete(&temp);
+            delete(M->grid[i-1]);
+            
+            break;
+          
+          //else change the value of the entry to x
+          }else{
+          
+            printf("change\n");
+            temp->value = x;
+          
+          }
+        
+        }
+        
+        
+        moveNext(M->grid[i-1]);
+        
+        //entry_delete(&temp);
+      
+      }
+      
+      //entry_delete(&temp);
     
     }
     
-    moveNext(M->grid[i-1]);
+    //if an element does not exist at all
+    if(exist == false){
+      
+      //printf("an element does not exist in the list yet, appending element to list\n");
+      
+      if(x != 0){
+      
+        Entry e = entry_create(j, x);
+      
+        if(length(M->grid[i-1]) == 0){
+        
+          append(M->grid[i-1], e);
+        
+        }else{
+        
+          moveFront(M->grid[i-1]);
+          
+          while(index(M->grid[i-1]) > -1 && ((Entry)get(M->grid[i-1]))->column < j){
+          
+            moveNext(M->grid[i-1]);
+          
+          }
+          
+          if(index(M->grid[i-1]) != -1){
+          
+            insertBefore(M->grid[i-1], e);
+          
+          }else{
+          
+            append(M->grid[i-1], e);
+          
+          }
+        
+        }
+        
+      }
+      
+    }
    
-    entry_delete(&e);
-   
-   }
-  
   }else{
     
     printf("bad bounds for change entry \n");
@@ -319,31 +400,36 @@ void printMatrix(FILE* out, Matrix M){
   
   //loop through array of lists
   for(int i = 0; i < size(M); i++){
-  
+    
+    //printf("printing row %d\n", i+1);
+    
     //print row, if not zero
     if(length(M->grid[i]) != 0){
     
-      fprintf(out, "%d:", i);
-    
-    }
-    
-    //loop though list i
-    moveFront(M->grid[i]);
-    
-    while(index(M->grid[i]) >= 0){
-    
-      Entry e = *(Entry*)get(M->grid[i-1]);
+      fprintf(out, "%d:", i+1);
       
-      fprintf(out, " (%d, %f)", e->column, e->value);
+      //loop though list i
+      moveFront(M->grid[i]);
+      //printf("moved front\n");
+    
+      while(index(M->grid[i]) >= 0){
+    
+        Entry e = (Entry)get(M->grid[i]);
+        
+        //printf("run\n");
       
-      moveNext(M->grid[i]);
+        fprintf(out, " (%d, %.1lf)", e->column, e->value);
+      
+        moveNext(M->grid[i]);
    
-      entry_delete(&e);
+        //entry_delete(&e);
     
+      }
+    
+      //newline
+      fprintf(out, "\n");
+      
     }
-    
-    //newline
-    fprintf(out, "\n");
     
   }
 

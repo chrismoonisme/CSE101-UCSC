@@ -136,6 +136,7 @@ int NNZ(Matrix M){
 
 }
 
+//equals
 int equals(Matrix A, Matrix B){
   
   //if the orders are different, automatically not equal
@@ -239,7 +240,7 @@ void changeEntry(Matrix M, int i, int j, double x){
           //if x is zero, delete the entry
           if(x == 0.0){
           
-            printf("set to 0 means delete\n");
+            //printf("set to 0 means delete\n");
             //entry_delete(&temp);
             delete(M->grid[i-1]);
             
@@ -248,7 +249,7 @@ void changeEntry(Matrix M, int i, int j, double x){
           //else change the value of the entry to x
           }else{
           
-            printf("change\n");
+            //printf("change\n");
             temp->value = x;
           
           }
@@ -434,6 +435,269 @@ void printMatrix(FILE* out, Matrix M){
   }
 
 }
+
+//scalar mult
+Matrix scalarMult(double x, Matrix A){
+
+  Matrix B = newMatrix(size(A));
+  
+  //loop through array of lists
+  for(int i = 0; i < size(A); i++){
+  
+    moveFront(A->grid[i]);
+    
+    while(index(A->grid[i]) >= 0){
+      
+      //get value
+      Entry e = (Entry)get(A->grid[i]);
+      
+      //make new entry to insert into B
+      Entry e2 = entry_create(e->column, e->value*x);
+      
+      append(B->grid[i], e2);
+    
+      moveNext(A->grid[i]);
+      
+    }
+  
+  }
+  
+  return B;
+
+}
+
+//sum
+Matrix sum(Matrix A, Matrix B){
+
+  if(size(A) != size(B)){
+    
+    printf("matrices should not be different sizes to add\n");
+    exit(1);
+    
+  }
+  
+  if(equals(A, B) ){
+  
+    return scalarMult(2, A);
+  
+  }
+  
+  Matrix S = newMatrix(size(A));
+  
+   //loop through array of lists
+  for(int i = 0; i < size(A); i++){
+  
+    moveFront(A->grid[i]);
+    moveFront(B->grid[i]);
+    
+    while(index(A->grid[i]) >= 0 && index(B->grid[i]) >= 0){
+      
+      //get values
+      Entry a = (Entry)get(A->grid[i]);
+      
+      Entry b = (Entry)get(B->grid[i]);
+      
+      //printf("column a = %d\n", a->column);
+      //printf("column b = %d\n", b->column);
+      
+      //cases
+      if(a->column > b->column){
+      
+        Entry e = entry_create(b->column, b->value);
+        
+        append(S->grid[i], e);
+        
+        moveNext(B->grid[i]);
+      
+      }else if(a->column < b->column){
+        
+        Entry e = entry_create(a->column, a->value);
+        
+        append(S->grid[i], e);
+        
+        moveNext(A->grid[i]);
+      
+      }else {
+      
+        if(a->value + b->value != 0){
+      
+          Entry e = entry_create(b->column, a->value + b->value);
+        
+          append(S->grid[i], e);
+        
+        }
+        
+        moveNext(B->grid[i]);
+        
+        moveNext(A->grid[i]);
+      
+      }
+      
+    }
+    
+    //flush
+    if(index(A->grid[i]) >= 0){
+      
+      while(index(A->grid[i]) >= 0){
+      
+        Entry a = (Entry)get(A->grid[i]);
+      
+        Entry e = entry_create(a->column, a->value);
+        
+        append(S->grid[i], e);
+        
+        moveNext(A->grid[i]);
+      
+      }
+    
+    }
+    
+    if(index(B->grid[i]) >= 0){
+      
+      while(index(B->grid[i]) >= 0){
+      
+        Entry a = (Entry)get(B->grid[i]);
+      
+        Entry e = entry_create(a->column, a->value);
+        
+        append(S->grid[i], e);
+        
+        moveNext(B->grid[i]);
+      
+      }
+    
+    }
+  
+  }
+  
+  return S;
+
+}
+
+//diff
+Matrix diff(Matrix A, Matrix B){
+
+  if(size(A) != size(B)){
+    
+    printf("matrices should not be different sizes to add\n");
+    exit(1);
+    
+  }
+  
+  if(equals(A, B) ){
+  
+    return newMatrix(size(A));
+  
+  }
+  
+  if( NNZ(A) == 0 ){
+  
+    return scalarMult(-1, B);
+  
+  }
+  
+  Matrix S = newMatrix(size(A));
+  
+   //loop through array of lists
+  for(int i = 0; i < size(A); i++){
+  
+    moveFront(A->grid[i]);
+    moveFront(B->grid[i]);
+    
+    while(index(A->grid[i]) >= 0 && index(B->grid[i]) >= 0){
+      
+      //get values
+      Entry a = (Entry)get(A->grid[i]);
+      
+      Entry b = (Entry)get(B->grid[i]);
+      
+      //printf("column a = %d\n", a->column);
+      //printf("column b = %d\n", b->column);
+      
+      //cases
+      if(a->column > b->column){
+      
+        Entry e = entry_create(b->column, b->value);
+        
+        append(S->grid[i], e);
+        
+        moveNext(B->grid[i]);
+      
+      }else if(a->column < b->column){
+        
+        Entry e = entry_create(a->column, a->value);
+        
+        append(S->grid[i], e);
+        
+        moveNext(A->grid[i]);
+      
+      }else {
+      
+        if(a->value - b->value != 0){
+      
+          Entry e = entry_create(b->column, a->value - b->value);
+        
+          append(S->grid[i], e);
+        
+        }
+        
+        moveNext(B->grid[i]);
+        
+        moveNext(A->grid[i]);
+      
+      }
+      
+    }
+    
+    //flush
+    if(index(A->grid[i]) >= 0){
+      
+      while(index(A->grid[i]) >= 0){
+      
+        Entry a = (Entry)get(A->grid[i]);
+      
+        Entry e = entry_create(a->column, a->value);
+        
+        append(S->grid[i], e);
+        
+        moveNext(A->grid[i]);
+      
+      }
+    
+    }
+    
+    if(index(B->grid[i]) >= 0){
+      
+      while(index(B->grid[i]) >= 0){
+      
+        Entry a = (Entry)get(B->grid[i]);
+      
+        Entry e = entry_create(a->column, a->value);
+        
+        append(S->grid[i], e);
+        
+        moveNext(B->grid[i]);
+      
+      }
+    
+    }
+  
+  }
+  
+  return S;
+
+}
+
+//product
+Matrix product(Matrix A, Matrix B){
+
+  Matrix S = newMatrix(size(A));
+  
+  return S;
+
+
+}
+
 
 
 

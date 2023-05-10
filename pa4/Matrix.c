@@ -627,7 +627,7 @@ Matrix diff(Matrix A, Matrix B){
       //means B - 0
       if(a->column > b->column){
         
-        printf("A greater than B here\n");
+        //printf("A greater than B here\n");
         Entry e = entry_create(b->column, b->value);
         
         append(S->grid[i], e);
@@ -638,7 +638,7 @@ Matrix diff(Matrix A, Matrix B){
         
       //like A(1,1) vs B(2,1)
       }else if(a->column < b->column){
-        printf("B greater than A here\n");
+        //printf("B greater than A here\n");
         Entry e = entry_create(a->column, a->value);
        
         
@@ -668,7 +668,7 @@ Matrix diff(Matrix A, Matrix B){
     if(index(A->grid[i]) >= 0){
       
       while(index(A->grid[i]) >= 0){
-        printf("flush A\n");
+        //printf("flush A\n");
         Entry a = (Entry)get(A->grid[i]);
       
         Entry e = entry_create(a->column, a->value);
@@ -689,7 +689,7 @@ Matrix diff(Matrix A, Matrix B){
     if(index(B->grid[i]) >= 0){
       
       while(index(B->grid[i]) >= 0){
-        printf("flush B\n");
+        //printf("flush B\n");
         Entry a = (Entry)get(B->grid[i]);
       
         Entry e = entry_create(a->column, a->value);

@@ -278,6 +278,7 @@ void changeEntry(Matrix M, int i, int j, double x){
       
         if(length(M->grid[i-1]) == 0){
         
+          //printf("appending\n");
           append(M->grid[i-1], e);
         
         }else{
@@ -296,6 +297,7 @@ void changeEntry(Matrix M, int i, int j, double x){
           
           }else{
           
+            //printf("appending\n");
             append(M->grid[i-1], e);
           
           }
@@ -356,7 +358,7 @@ Matrix transpose(Matrix A){
   Matrix B = newMatrix(size(A));
   
   //loop through array of lists in B (Lists should all be empty at first)
-  for(int i = 0; i < size(B); i++){
+  for(int i = 0; i < size(A); i++){
     
     //loop though empty list i
     moveFront(A->grid[i]);
@@ -373,14 +375,20 @@ Matrix transpose(Matrix A){
       // row 2: (3, 1)
       Entry e = (Entry)get(A->grid[i]);
       
-      //transpose entry
+      //create transpose entry
       // (2, 1);
+      //printf("i value is %d\n", i);
+      //printf("e value is %lf\n", e->value);
+      //printf("e column is %d\n", e->column);
+      
       Entry t = entry_create(i+1, e->value);
       
       
       //append TRANSPOSE into B
       // row 3: (2, 1);
-      append(B->grid[e->column], t);
+      append(B->grid[e->column-1], t);
+      
+      //changeEntry(B, e->column + 1, i+1, e->value);
       
       //move next in Bs list
       moveNext(A->grid[i]);
@@ -579,7 +587,7 @@ Matrix diff(Matrix A, Matrix B){
 
   if(size(A) != size(B)){
     
-    printf("matrices should not be different sizes to add\n");
+    printf("matrices should not be different sizes to subtract\n");
     exit(1);
     
   }
@@ -621,11 +629,15 @@ Matrix diff(Matrix A, Matrix B){
         
         append(S->grid[i], e);
         
+        e->value *= -1;
+        
         moveNext(B->grid[i]);
       
       }else if(a->column < b->column){
         
         Entry e = entry_create(a->column, a->value);
+        
+       
         
         append(S->grid[i], e);
         
@@ -636,7 +648,7 @@ Matrix diff(Matrix A, Matrix B){
         if(a->value - b->value != 0){
       
           Entry e = entry_create(b->column, a->value - b->value);
-        
+           //e->value *= -1;
           append(S->grid[i], e);
         
         }
@@ -658,6 +670,11 @@ Matrix diff(Matrix A, Matrix B){
       
         Entry e = entry_create(a->column, a->value);
         
+       
+        e->value *= -1;
+    
+        
+        
         append(S->grid[i], e);
         
         moveNext(A->grid[i]);
@@ -674,6 +691,8 @@ Matrix diff(Matrix A, Matrix B){
       
         Entry e = entry_create(a->column, a->value);
         
+         e->value *= -1;
+        
         append(S->grid[i], e);
         
         moveNext(B->grid[i]);
@@ -688,15 +707,117 @@ Matrix diff(Matrix A, Matrix B){
 
 }
 
+double vectorDot(List P, List Q){
+
+  double dp = 0;
+
+  moveFront(P);
+  
+  moveFront(Q);
+  
+  while(index(P) >= 0 && index(Q) >= 0){
+  
+    Entry a = (Entry)get(P);
+    
+    Entry b = (Entry)get(Q);
+    
+    if(a->column > b->column){
+    
+      moveNext(Q);
+    
+    }else if(a->column < b->column){
+    
+      moveNext(P);
+    
+    }else{
+    
+      dp+= a->value * b->value;
+      moveNext(Q);
+      moveNext(P);
+    
+    }
+    
+  }
+  
+  return dp;
+
+}
+
+
+//Matrix product(Matrix A, Matrix B){
+  
+  //return A;
+
+//}
+
+
 //product
 Matrix product(Matrix A, Matrix B){
 
+
+  if(size(A) != size(B)){
+    
+    printf("matrices should not be different sizes to multiply\n");
+    exit(1);
+    
+  }
+  
+
   Matrix S = newMatrix(size(A));
   
+  //printf("created new matrix\n");
+  
+  Matrix T = transpose(B);
+  
+  //printf("setup transpose\n");
+  
+  //loop through each element in the matrix
+  
+  //array of lists
+  for(int i = 0; i < size(A); i++){
+    
+    List a = A->grid[i];
+    
+    if(length(a) != 0){
+    
+      for(int j = 0; j < size(A); j++){
+    
+        List b = T->grid[j];
+        
+        if(length(b) != 0){
+      
+          double dp = vectorDot(a, b);
+      
+          //printf("j value is %d\n", j);
+      
+          //changeEntry(S, i+1, j, dp);
+          if(dp != 0){
+            
+            Entry x = entry_create(j+1, dp);
+          
+            append(S->grid[i], x);
+            
+            
+          }
+          
+        }
+  
+      }
+    
+    }
+  
+  }
+  
+  //printf("reached end of product\n");
+  
+  freeMatrix(&T);
+  
   return S;
-
-
+  
 }
+
+
+
 
 
 

@@ -210,6 +210,8 @@ void List::clear(){
   frontDummy->next = backDummy;
   
   backDummy->prev = frontDummy;
+  
+  moveFront();
 
 }
 
@@ -317,6 +319,8 @@ void List::insertBefore(ListElement x){
 
   //make a new node
   Node *n = new Node(x);
+  //printf("made new node\n");
+  
   
   //insert
   
@@ -495,6 +499,51 @@ ListElement List::findPrev(ListElement x) {
 
 //cleanup
 void List::cleanup(){
+
+  Node* N = nullptr;
+  
+  for(N=frontDummy->next; N!=backDummy; N=N->next){
+  
+    Node* x = nullptr;
+    
+    for(x = N->next; x!=backDummy; x=x->next){
+    
+      if(x->data == N->data){ 
+      
+        x->data = -1;
+      
+      }
+      
+    }
+  
+  }
+  
+  Node* S = nullptr;
+  
+  int a = 0;
+  
+  int z = 0;
+  
+  for(S=frontDummy->next; S!=backDummy; S=S->next){
+    //printf("cursor is %d\n", pos_cursor);
+    if(S->data == -1){
+      //printf("a is %d\n", a);
+      num_elements--;
+      
+      if(a <= pos_cursor){
+        
+        z++;
+      
+      }
+    
+    }
+    
+    
+    a++;
+  
+  }
+  
+  pos_cursor -= z;
 
   
 

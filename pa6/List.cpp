@@ -94,6 +94,8 @@ List::~List(){
    delete frontDummy;
    delete backDummy; 
    
+   //printf("deleted list\n");
+   
 }
 
 
@@ -190,13 +192,13 @@ void List::clear(){
   
   num_elements = 0;
   
-  moveBack();
+  //moveFront();
   
   Node *N =nullptr;
   
   for(N=frontDummy->next; N!=nullptr; N=N->next){
   
-    if(N != backDummy){
+    if(N->prev != frontDummy){
     
       delete N->prev;
     
@@ -211,7 +213,11 @@ void List::clear(){
   
   backDummy->prev = frontDummy;
   
-  moveFront();
+  beforeCursor = frontDummy;
+  
+  afterCursor = backDummy;
+  
+  //moveFront();
 
 }
 

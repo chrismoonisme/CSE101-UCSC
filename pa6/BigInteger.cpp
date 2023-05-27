@@ -491,36 +491,36 @@ void sumList(List& S, List A, List B, int sign){
 
   S.clear();
   
-  A.moveFront();
+  A.moveBack();
   
-  B.moveFront();
+  B.moveBack();
   
   
-  while(A.position() != A.length() && B.position() != B.length()){
+  while(A.position() != 0 && B.position() != 0){
     
-    //printf("add up %ld and %ld\n", (A.peekNext()), (sign*B.peekNext()));
+    //printf("add up %ld and %ld\n", (A.peekPrev()), (sign*B.peekPrev()));
     
-    //printf("value is %ld\n", ((A.peekNext()) + (sign*B.peekNext()) ));
+    //printf("value is %ld\n", ((A.peekPrev()) + (sign*B.peekPrev()) ));
     
     
     
-    S.insertBefore(  ((A.peekNext()) + (sign*B.peekNext()) ));
+    S.insertAfter(  ((A.peekPrev()) + (sign*B.peekPrev()) ));
     
-    A.moveNext();
+    A.movePrev();
     
-    B.moveNext();
+    B.movePrev();
     
   }
   
   //printf("exiting while \n");
   
   //flush
-  if(A.position() != A.length()){
+  if(A.position() != 0){
   
-    while(A.position() != A.length()){
+    while(A.position() != 0){
     
-      S.insertBefore( (A.peekNext()) );
-      A.moveNext();
+      S.insertAfter( (A.peekPrev()) );
+      A.movePrev();
     
     }
   
@@ -529,12 +529,12 @@ void sumList(List& S, List A, List B, int sign){
   //printf("flushed a \n");
   
   //flush
-  if(B.position() != B.length()){
+  if(B.position() != 0){
   
-    while(B.position() != B.length()){
+    while(B.position() != 0){
     
-      S.insertBefore( (sign*B.peekNext()) );
-      B.moveNext();
+      S.insertAfter( (sign*B.peekPrev()) );
+      B.movePrev();
     
     }
   

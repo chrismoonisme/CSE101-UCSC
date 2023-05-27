@@ -182,7 +182,9 @@ public:
    // Returns true if and only if this List is the same integer sequence as R.
    // The cursors in this List and in R are unchanged.
    bool equals(const List& R) const;
-
+   
+   
+   
 
    // Overriden Operators -----------------------------------------------------
    

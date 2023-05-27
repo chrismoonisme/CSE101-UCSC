@@ -698,6 +698,10 @@ bool List::equals(const List& Q) const{
 
 }
 
+
+
+
+
 // Overriden Operators -----------------------------------------------------
 
 std::ostream& operator<<( std::ostream& stream,  const List& L ) {

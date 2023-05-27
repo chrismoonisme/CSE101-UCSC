@@ -11,37 +11,19 @@ using namespace std;
 
 int main(){
 
-  string s1 = "+00006523485630758234007488392857982374523487612398700554";
-  string s2 = "-330293847502398475";
+  BigInteger A = BigInteger("+111122223333");
+  BigInteger B = BigInteger("-112122223333");
   
-  long x = -330293847502398475;
+  BigInteger C = BigInteger();
   
-  BigInteger N = BigInteger();  
-  
-  BigInteger A = BigInteger(s1);
-  
-  BigInteger B = BigInteger(s2);
-  
-  BigInteger C = BigInteger(x);
-  
+  C = A+B;
+    
   cout << endl;
   
-
-  cout << "A = " << A << endl;
-  
-  cout << "B = " << B << endl;
   
   cout << "C = " << C << endl;
-   
-  cout << "N = " << N << endl;
   
-  A.makeZero();
   
-  cout << "A zeroed out = " << A << endl;
-  
-  C.negate();
-  
-  cout << "A negated = " << C << endl;
 
   return 0;
 

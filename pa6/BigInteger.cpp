@@ -309,7 +309,7 @@ int BigInteger::compare(const BigInteger& N) const{
     //printf("value of A pos is %d\n", L1.position());
     //printf("value of B pos is %d\n", L2.position());
     
-    //printf("value of A length is %d\n", L1.length());
+    //printf("value of A length is %d\n", L1.length());BigInteger C
     
     for(int i = 0; i < this->digits.length(); i++){
       
@@ -332,11 +332,11 @@ int BigInteger::compare(const BigInteger& N) const{
         
       //positive and og is less than n
       }else if(og < n && this->sign() == 1){
-      
+        
         return -1;
       
       //negative and og is less than n
-      }else if(og > n && this->sign() == -1){
+      }else if(og < n && this->sign() == -1){
       
         return 1;
       
@@ -351,6 +351,7 @@ int BigInteger::compare(const BigInteger& N) const{
   
   }
   
+  //printf("same value \n");
   return result;
 
 }
@@ -380,7 +381,6 @@ void BigInteger::negate(){
 
 // BigInteger Arithmetic operations ----------------------------------------
 
-
 //normalize
 int normalize(List& L){
 
@@ -400,10 +400,7 @@ int normalize(List& L){
       L.moveNext();
     
     }
-  
-  }else if(L.length() == 0){
-  
-    sign = 0;
+
   
   }
   
@@ -411,81 +408,86 @@ int normalize(List& L){
   //move to end of list
   L.moveBack();
   
+  //declare current and carry
   long curr = 0;
   
   long carry = 0;
   
+  //loop through list
   while(L.position() != 0 ){
-  
+    
+    //set cursor 
     curr = L.peekPrev();
-    //printf("loop, current is %ld\n", curr);
     
-    //if i need to carry from before, add 1 to the value
-    
-    if(carry == 1){
-    
-      //printf("need to append and make %ld\n", L.peekPrev() + 1);
+    if(carry != 0){
       
-      L.setBefore(L.peekPrev() + 1);
-      curr = L.peekPrev();
+      //printf("add carry (%ld) to curr (%ld)\n", carry, curr);
       
-      carry = 0;
-      //printf("set carry to 0\n");
+      L.setBefore(curr+=carry);
     
     }
     
-    if(carry == -1){
+    //reset carry
+    carry = 0;
     
-      //printf("need to delete and make %ld\n", L.peekPrev() + 1);
-      
-      L.setBefore(L.peekPrev() - 1);
-      curr = L.peekPrev();
-      
-      carry = 0;
-      //printf("set carry to 0\n");
     
-    }
+    //if curr >= BASE
     
-    //if the current value is too large
     if(curr >= BASE){
-      //printf("digit is too big, setting carry to 1\n");
-      L.setBefore(curr - BASE);
+    
+      //printf("too large\n");
+    
+      carry = 1* ((curr - (curr%BASE)) / BASE);
       
-      //mark for carry next time
-      carry = 1;
+      L.setBefore(curr%BASE);
+      
+      //curr = L.peekPrev();
+    
     
     }
     
-    //too small
-    if(curr < 0){
+    if(curr < 0 ){
     
-      //printf("digit is too small, setting carry to -1\n");
-      L.setBefore(curr + BASE);
+      //printf("too small\n");
+    
+      int tracker = 0;
+    
+      while(curr < 0){
       
-      carry = -1;
-    
+        curr+=BASE;
+        
+        tracker++;
+      
+      }
+      
+      //printf("new curr = %ld\n", curr);
+      
+      L.setBefore(curr);
+      
+      carry = -1*tracker;
+      
+      //printf("carry over = %ld\n", carry);
+      
     }
     
     L.movePrev();
-  
-  }
-  
-  
-  //printf("exit while\n");
-  //printf("carry = %ld\n", carry);
-  
-  if(carry == 1){
     
-    L.insertBefore(1);
+  }
+  
+  L.moveFront();
+  if(carry != 0){
+  
+    L.insertBefore(carry);
   
   }
   
+  //printf("sign is %d\n", sign);
   return sign;
 
 }
 
 //sum list WORKS
-void sumList(List& S, List A, List B, int sgna, int sgnb){
+void sumList(List& S, List A, List B, int sign){
 
   S.clear();
   
@@ -493,30 +495,21 @@ void sumList(List& S, List A, List B, int sgna, int sgnb){
   
   B.moveFront();
   
+  
   while(A.position() != A.length() && B.position() != B.length()){
     
-    printf("add up %ld and %ld\n", (sgna*A.peekNext()), (sgnb*B.peekNext()));
+    //printf("add up %ld and %ld\n", (A.peekNext()), (sign*B.peekNext()));
     
-    printf("value is %ld\n", ((sgna*A.peekNext()) + (sgnb*B.peekNext()) ));
+    //printf("value is %ld\n", ((A.peekNext()) + (sign*B.peekNext()) ));
     
-    if( (sgna*A.peekNext()) + (sgnb*B.peekNext()) < 0){
     
-      S.insertBefore(  ((sgna*A.peekNext()) + (sgnb*B.peekNext()) ));
     
-    }else{
-    
-      S.insertBefore( (sgna*A.peekNext()) + (sgnb*B.peekNext()) );
-    
-    }
+    S.insertBefore(  ((A.peekNext()) + (sign*B.peekNext()) ));
     
     A.moveNext();
     
-    //if(A != B){
-    
     B.moveNext();
     
-    //}
-  
   }
   
   //printf("exiting while \n");
@@ -526,7 +519,7 @@ void sumList(List& S, List A, List B, int sgna, int sgnb){
   
     while(A.position() != A.length()){
     
-      S.insertBefore( (sgna*A.peekNext()) );
+      S.insertBefore( (A.peekNext()) );
       A.moveNext();
     
     }
@@ -540,7 +533,7 @@ void sumList(List& S, List A, List B, int sgna, int sgnb){
   
     while(B.position() != B.length()){
     
-      S.insertBefore( (sgnb*B.peekNext()) );
+      S.insertBefore( (sign*B.peekNext()) );
       B.moveNext();
     
     }
@@ -552,57 +545,249 @@ void sumList(List& S, List A, List B, int sgna, int sgnb){
   //printf("flushed b \n");
   //S.signum = normalize(S);
   
+  
+  
+  
 }
 
 //add
 BigInteger BigInteger::add(const BigInteger &N) const{
+    
+    BigInteger sum = BigInteger();
+
+    BigInteger n = BigInteger(N);
+    
+    n.negate();
+    
+    if(this->compare(n) == 0){
+    
+      return sum;
+    
+    }
+    
   
-  BigInteger sum = BigInteger();
-  
-  BigInteger n = BigInteger(N);
-  
-  n.negate();
-  
-  if(this->compare(n) == 0){
-  
+    
+    //A is negative B is positive
+    if(this->sign() == -1 && N.sign() == 1){
+    
+      sumList(sum.digits, N.digits, this->digits, -1 );
+      
+      sum.signum = normalize(sum.digits);
+    
+    }
+    
+    //both negative
+    if(this->sign() == -1 && N.sign() == -1){
+    
+      sumList(sum.digits, N.digits, this->digits, 1 );
+      
+      sum.signum = normalize(sum.digits);
+      
+      sum.signum = -1;
+    
+    }
+    
+    //A positive B negative
+    if(this->sign() == 1 && N.sign() == -1){
+    
+      sumList(sum.digits, this->digits, N.digits, -1 );
+      
+      sum.signum = normalize(sum.digits);
+    
+    }
+    
+    //both positive
+    if(this->sign() == 1 && N.sign() == 1){
+    
+      sumList(sum.digits, this->digits, N.digits, 1 );
+      
+      sum.signum = normalize(sum.digits);
+    
+    }
+    
+    
     return sum;
   
-  }
-  
-  List a = this->digits;
-  List b = N.digits;
-  
-  sumList(sum.digits, a, b, this->sign(), N.sign());
-  
-  sum.signum = normalize(sum.digits);
-  
-  //printf("finished sumlist \n");
-  
-  //normalize(sum.digits);
-  
-  return sum;
 
 }
 
 //subtract
 BigInteger BigInteger::sub(const BigInteger &N) const{
   
-  BigInteger N2 = BigInteger(N);
+    BigInteger N2 = BigInteger(N);
   
-  N2.negate();
+    N2.negate();
   
  
   
-  return this->add(N2);
+    return this->add(N2);
 
+
+}
+
+//scalar mult
+void scalarMultList(List& L, ListElement m){
+
+  L.moveBack();
+  
+  while(L.position() != 0){
+  
+    //printf("%ld x %ld\n", L.peekPrev(), m);
+  
+    L.setBefore(L.peekPrev() * m);
+    
+    L.movePrev();
+  
+  }
+  
+  //printf("finished scalar mult\n");
+  //normalize(L);
+  //printf("normalized\n");
+  
+
+}
+
+void shiftList(List& L, int p){
+
+  std::string s = "";
+  
+  for(int i = 0; i < POWER; i++){
+  
+    s += '0';
+    
+  }
+  
+  long l = atol(s.c_str());
+  
+  L.moveBack();
+  
+  
+  for(int j = 0; j< p; j++){
+  
+    L.insertBefore(l);
+  
+  }
+  
 }
 
 //mult
 BigInteger BigInteger::mult(const BigInteger &N) const{
   
-  BigInteger x = BigInteger(N);
+  BigInteger X = BigInteger();
   
-  return x;
+  int sign = 1;
+  
+  List a = this->digits;
+  
+  List b = N.digits;
+  
+  if(a.length() ==0 || b.length() ==0){
+  
+    return X;
+  
+  }
+  
+  
+  //loop through b list
+  b.moveBack();
+  
+  int shift = 0;
+  
+  while(b.position() != 0){
+  
+    List add = this->digits;
+    
+    //set a to the scalar
+    scalarMultList(add, b.peekPrev());
+    
+    //shift necessary amount
+    if(shift != 0){
+    
+      shiftList(add, shift);
+      //printf("shifted\n");
+    
+    }
+    
+    shift++;
+    
+    //printf("SCALAR MULT\n");
+    
+    //add.moveFront();
+    
+    //for(int i = 0; i<add.length(); i++){
+    
+      //printf("%ld ", add.peekNext());
+      //add.moveNext();
+    
+    //}
+    
+    //printf("\n");
+    
+    
+    //printf("ADD\n");
+    
+    //add onto total
+    sumList(X.digits, X.digits, add, sign);
+    
+    //List c = X.digits;
+    
+    //c.moveFront();
+    
+    //for(int i = 0; i<c.length(); i++){
+    
+      //printf("%ld ", c.peekNext());
+      //c.moveNext();
+    
+    //}
+    
+    //c.clear();
+    
+    //printf("\n");
+
+    //printf("NORMALIZE\n");
+    
+    normalize(X.digits);
+    
+    //c = X.digits;
+    
+    //c.moveFront();
+    
+    //for(int i = 0; i<c.length(); i++){
+    
+      //printf("%ld ", c.peekNext());
+      //c.moveNext();
+    
+    //}
+    
+    //printf("\n\n");
+    
+    //c.clear();
+    
+    
+    add.clear();
+    
+    //move cursor
+    b.movePrev();
+    
+    
+  }
+  
+  if(this->sign() != N.sign()){
+  
+    
+  
+    //printf("diff sign %d vs %d\n", this->sign(), N.sign());
+    X.signum = -1;
+  
+  }else{
+    
+    //printf("same sign\n");
+    
+    X.signum = 1;
+  
+  }
+  
+  return X;
 
 }
 // Print -------------------------------------------------------------------
@@ -628,7 +813,7 @@ std::string BigInteger::to_string() {
   
   }
   
-  digits.moveFront();
+    digits.moveFront();
   
   for(int i =0; i < digits.length(); i++){
   
@@ -650,7 +835,8 @@ std::string BigInteger::to_string() {
     
     //printf("digit is %ld\n", digits.peekNext());
     
-    s += std::to_string(digits.peekNext())+' ';
+    
+    s += std::to_string(digits.peekNext());
     
     digits.moveNext();
   

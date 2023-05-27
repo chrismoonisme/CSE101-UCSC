@@ -7,7 +7,7 @@
 #include "List.h"
 #include "BigInteger.h"
 
-#define BASE 1000000000
+#define BASE 1000000000 
 #define POWER 9
 
 // Class Constructors & Destructors -------------------------------------------
@@ -258,10 +258,17 @@ int BigInteger::sign() const{
 }
 
 //compare
-/*
+
 int BigInteger::compare(const BigInteger& N) const{
 
   int result = 0;
+  
+  List L1 = this->digits;
+  List L2 = N.digits;
+  
+  //printf("digits in A is %d\n", L1.length());
+    
+  //printf("digits in B is %d\n", L2.length());
   
   if(this->sign() > N.sign()){
     
@@ -273,29 +280,45 @@ int BigInteger::compare(const BigInteger& N) const{
     //n has a greater sign than og
     return -1;
   
-  }else if(this->digits.length() > N.digits.length() ){
+  }else if(L1.length() > L2.length() ){
     
+    if(N.sign() == -1){
     //og has more digits than n
+      return -1;
+    }
     return 1;
   
-  }else if(this->digits.length() < N.digits.length() ){
+  }else if(L1.length() < L2.length() ){
   
     //og has less digits than n
+    if(N.sign() == -1){
+    //og has more digits than n
+      return 1;
+    }
+    
+    //printf("og has less digits, and is therefore smaller\n");
     return -1;
   
   }else{
     
     //compare node by node
-    (this->digits).moveFront();
+    (L1).moveFront();
     
-    N.digits.moveFront();
+    L2.moveFront();
+    
+    //printf("value of A pos is %d\n", L1.position());
+    //printf("value of B pos is %d\n", L2.position());
+    
+    //printf("value of A length is %d\n", L1.length());
     
     for(int i = 0; i < this->digits.length(); i++){
       
       //get values
-      long og = this->digits.peekNext();
+      long og = L1.peekNext();
+      //printf("value of A node is %ld\n", og);
       
-      long n = N.digits.peekNext();
+      long n = L2.peekNext();
+      //printf("value of B node is %ld\n", n);
       
       //if positive and og is greater than n
       if(og > n && this->sign() == 1){
@@ -320,9 +343,9 @@ int BigInteger::compare(const BigInteger& N) const{
       }
       
       //next
-      this->digits.moveNext();
+      L1.moveNext();
       
-      N.digits.moveNext();
+      L2.moveNext();
     
     }
   
@@ -331,7 +354,7 @@ int BigInteger::compare(const BigInteger& N) const{
   return result;
 
 }
-*/
+
 
 // Manipulation procedures -------------------------------------------------
 
@@ -358,8 +381,230 @@ void BigInteger::negate(){
 // BigInteger Arithmetic operations ----------------------------------------
 
 
+//normalize
+int normalize(List& L){
 
+  //find sign
+  int sign = 1;
+  
+  L.moveFront();
+  
+  if(L.peekNext() < 0){
+  
+    sign = -1;
+    
+    while(L.position() != L.length()){
+    
+      L.setAfter(L.peekNext() * -1);
+      
+      L.moveNext();
+    
+    }
+  
+  }else if(L.length() == 0){
+  
+    sign = 0;
+  
+  }
+  
+  
+  //move to end of list
+  L.moveBack();
+  
+  long curr = 0;
+  
+  long carry = 0;
+  
+  while(L.position() != 0 ){
+  
+    curr = L.peekPrev();
+    //printf("loop, current is %ld\n", curr);
+    
+    //if i need to carry from before, add 1 to the value
+    
+    if(carry == 1){
+    
+      //printf("need to append and make %ld\n", L.peekPrev() + 1);
+      
+      L.setBefore(L.peekPrev() + 1);
+      curr = L.peekPrev();
+      
+      carry = 0;
+      //printf("set carry to 0\n");
+    
+    }
+    
+    if(carry == -1){
+    
+      //printf("need to delete and make %ld\n", L.peekPrev() + 1);
+      
+      L.setBefore(L.peekPrev() - 1);
+      curr = L.peekPrev();
+      
+      carry = 0;
+      //printf("set carry to 0\n");
+    
+    }
+    
+    //if the current value is too large
+    if(curr >= BASE){
+      //printf("digit is too big, setting carry to 1\n");
+      L.setBefore(curr - BASE);
+      
+      //mark for carry next time
+      carry = 1;
+    
+    }
+    
+    //too small
+    if(curr < 0){
+    
+      //printf("digit is too small, setting carry to -1\n");
+      L.setBefore(curr + BASE);
+      
+      carry = -1;
+    
+    }
+    
+    L.movePrev();
+  
+  }
+  
+  
+  //printf("exit while\n");
+  //printf("carry = %ld\n", carry);
+  
+  if(carry == 1){
+    
+    L.insertBefore(1);
+  
+  }
+  
+  return sign;
 
+}
+
+//sum list WORKS
+void sumList(List& S, List A, List B, int sgna, int sgnb){
+
+  S.clear();
+  
+  A.moveFront();
+  
+  B.moveFront();
+  
+  while(A.position() != A.length() && B.position() != B.length()){
+    
+    printf("add up %ld and %ld\n", (sgna*A.peekNext()), (sgnb*B.peekNext()));
+    
+    printf("value is %ld\n", ((sgna*A.peekNext()) + (sgnb*B.peekNext()) ));
+    
+    if( (sgna*A.peekNext()) + (sgnb*B.peekNext()) < 0){
+    
+      S.insertBefore(  ((sgna*A.peekNext()) + (sgnb*B.peekNext()) ));
+    
+    }else{
+    
+      S.insertBefore( (sgna*A.peekNext()) + (sgnb*B.peekNext()) );
+    
+    }
+    
+    A.moveNext();
+    
+    //if(A != B){
+    
+    B.moveNext();
+    
+    //}
+  
+  }
+  
+  //printf("exiting while \n");
+  
+  //flush
+  if(A.position() != A.length()){
+  
+    while(A.position() != A.length()){
+    
+      S.insertBefore( (sgna*A.peekNext()) );
+      A.moveNext();
+    
+    }
+  
+  }
+  
+  //printf("flushed a \n");
+  
+  //flush
+  if(B.position() != B.length()){
+  
+    while(B.position() != B.length()){
+    
+      S.insertBefore( (sgnb*B.peekNext()) );
+      B.moveNext();
+    
+    }
+  
+  }
+  
+  S.moveFront();
+  
+  //printf("flushed b \n");
+  //S.signum = normalize(S);
+  
+}
+
+//add
+BigInteger BigInteger::add(const BigInteger &N) const{
+  
+  BigInteger sum = BigInteger();
+  
+  BigInteger n = BigInteger(N);
+  
+  n.negate();
+  
+  if(this->compare(n) == 0){
+  
+    return sum;
+  
+  }
+  
+  List a = this->digits;
+  List b = N.digits;
+  
+  sumList(sum.digits, a, b, this->sign(), N.sign());
+  
+  sum.signum = normalize(sum.digits);
+  
+  //printf("finished sumlist \n");
+  
+  //normalize(sum.digits);
+  
+  return sum;
+
+}
+
+//subtract
+BigInteger BigInteger::sub(const BigInteger &N) const{
+  
+  BigInteger N2 = BigInteger(N);
+  
+  N2.negate();
+  
+ 
+  
+  return this->add(N2);
+
+}
+
+//mult
+BigInteger BigInteger::mult(const BigInteger &N) const{
+  
+  BigInteger x = BigInteger(N);
+  
+  return x;
+
+}
 // Print -------------------------------------------------------------------
 
 //print
@@ -387,7 +632,7 @@ std::string BigInteger::to_string() {
   
   for(int i =0; i < digits.length(); i++){
   
-    if(i != 0){
+    if(i != 0 && digits.peekNext() - BASE <= 0){
     
       std::string e = std::to_string(digits.peekNext());
       
@@ -398,12 +643,14 @@ std::string BigInteger::to_string() {
         s +='0';
       
       }
-      
+      //printf("exit for loop\n");
       //e.clear();
     
     }
     
-    s += std::to_string(digits.peekNext());
+    //printf("digit is %ld\n", digits.peekNext());
+    
+    s += std::to_string(digits.peekNext())+' ';
     
     digits.moveNext();
   
@@ -411,9 +658,11 @@ std::string BigInteger::to_string() {
   //printf("finish print\n");
   return s;
 
-
-
 }
+
+
+
+
 
 // Overriden Operators -----------------------------------------------------
 
@@ -424,6 +673,107 @@ std::ostream& operator<<( std::ostream& stream, BigInteger N ) {
    
 }
 
+bool operator==(const BigInteger& A, const BigInteger& B){
+
+  if(A.compare(B) == 0){
+  
+    return true;
+  
+  }
+  
+  return false;
+
+}
+
+bool operator<(const BigInteger& A, const BigInteger& B){
+
+  if(A.compare(B) == -1){
+  
+    return true;
+  
+  }
+  
+  return false;
+
+}
+
+bool operator<=(const BigInteger& A, const BigInteger& B){
+
+  if(A.compare(B) == -1 || A.compare(B) == 0){
+  
+    return true;
+  
+  }
+  
+  return false;
+
+}
+
+bool operator>(const BigInteger& A, const BigInteger& B){
+
+  if(A.compare(B) == 1){
+  
+    return true;
+  
+  }
+  
+  return false;
+
+}
+
+bool operator>=(const BigInteger& A, const BigInteger& B){
+
+  if(A.compare(B) == 1 || A.compare(B) == 0){
+  
+    return true;
+  
+  }
+  
+  return false;
+
+}
+
+BigInteger operator+(const BigInteger& A, const BigInteger& B){
+
+  return A.add(B);
+
+}
+
+BigInteger operator-(const BigInteger& A, const BigInteger& B){
+
+  return A.sub(B);
+
+}
+
+BigInteger operator+=( BigInteger& A, const BigInteger& B){
+
+  A = A+B;
+  
+  return A;
+
+}
+
+BigInteger operator-=( BigInteger& A, const BigInteger& B){
+
+  A = A-B;
+  
+  return A;
+
+}
+
+BigInteger operator*(const BigInteger& A, const BigInteger& B){
+
+  return A.mult(B);
+
+}
+
+BigInteger operator*=( BigInteger& A, const BigInteger& B){
+
+  A = A*B;
+  
+  return A;
+
+}
 
 
 

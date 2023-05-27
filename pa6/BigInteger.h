@@ -56,7 +56,7 @@ public:
    // compare()
    // Returns -1, 1 or 0 according to whether this BigInteger is less than N,
    // greater than N or equal to N, respectively.
-   //int compare(const BigInteger& N) const;
+   int compare(const BigInteger& N) const;
 
 
    // Manipulation procedures -------------------------------------------------
@@ -75,15 +75,15 @@ public:
 
    // add()
    // Returns a BigInteger representing the sum of this and N.
-   //BigInteger add(const BigInteger& N) const;
+   BigInteger add(const BigInteger& N) const;
 
    // sub()
    // Returns a BigInteger representing the difference of this and N.
-   //BigInteger sub(const BigInteger& N) const;
+   BigInteger sub(const BigInteger& N) const;
 
    // mult()
    // Returns a BigInteger representing the product of this and N. 
-   //BigInteger mult(const BigInteger& N) const;
+   BigInteger mult(const BigInteger& N) const;
 
 
    // Other Functions ---------------------------------------------------------
@@ -104,47 +104,47 @@ public:
 
    // operator==()
    // Returns true if and only if A equals B. 
-   //friend bool operator==( const BigInteger& A, const BigInteger& B );
+   friend bool operator==( const BigInteger& A, const BigInteger& B );
 
    // operator<()
    // Returns true if and only if A is less than B. 
-   //friend bool operator<( const BigInteger& A, const BigInteger& B );
+   friend bool operator<( const BigInteger& A, const BigInteger& B );
 
    // operator<=()
    // Returns true if and only if A is less than or equal to B. 
-   //friend bool operator<=( const BigInteger& A, const BigInteger& B );
+   friend bool operator<=( const BigInteger& A, const BigInteger& B );
 
    // operator>()
    // Returns true if and only if A is greater than B. 
-   //friend bool operator>( const BigInteger& A, const BigInteger& B );
+   friend bool operator>( const BigInteger& A, const BigInteger& B );
 
    // operator>=()
    // Returns true if and only if A is greater than or equal to B. 
-   //friend bool operator>=( const BigInteger& A, const BigInteger& B );
+   friend bool operator>=( const BigInteger& A, const BigInteger& B );
 
    // operator+()
    // Returns the sum A+B. 
-   //friend BigInteger operator+( const BigInteger& A, const BigInteger& B );
+   friend BigInteger operator+( const BigInteger& A, const BigInteger& B );
 
    // operator+=()
    // Overwrites A with the sum A+B. 
-   //friend BigInteger operator+=( BigInteger& A, const BigInteger& B );
+   friend BigInteger operator+=( BigInteger& A, const BigInteger& B );
 
    // operator-()
    // Returns the difference A-B. 
-   //friend BigInteger operator-( const BigInteger& A, const BigInteger& B );
+   friend BigInteger operator-( const BigInteger& A, const BigInteger& B );
 
    // operator-=()
    // Overwrites A with the difference A-B. 
-   //friend BigInteger operator-=( BigInteger& A, const BigInteger& B );
+   friend BigInteger operator-=( BigInteger& A, const BigInteger& B );
 
    // operator*()
    // Returns the product A*B. 
-   //friend BigInteger operator*( const BigInteger& A, const BigInteger& B );
+   friend BigInteger operator*( const BigInteger& A, const BigInteger& B );
 
    // operator*=()
    // Overwrites A with the product A*B. 
-   //friend BigInteger operator*=( BigInteger& A, const BigInteger& B );
+   friend BigInteger operator*=( BigInteger& A, const BigInteger& B );
 
 };
 

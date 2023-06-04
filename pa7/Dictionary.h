@@ -38,6 +38,8 @@ private:
    int   num_pairs;
 
    // Helper Functions (Optional) ---------------------------------------------
+   
+   void transplant(Node* u, Node* v);
 
    // inOrderString()
    // Appends a string representation of the tree rooted at R to string s. The
@@ -55,6 +57,7 @@ private:
    // Recursively inserts a deep copy of the subtreFe rooted at R into this 
    // Dictionary. Recursion terminates at N.
    //void preOrderCopy(Node* R, Node* N);
+   void preOrderCopy(Node* R);
 
    // postOrderDelete()
    // Deletes all Nodes in the subtree rooted at R.
@@ -85,7 +88,7 @@ private:
    // If N does not point to the leftmost Node, returns a pointer to the
    // Node before N in an in-order tree walk.  If N points to the leftmost 
    // Node, or is nil, returns nil.
-   //Node* findPrev(Node* N);
+   Node* findPrev(Node* N);
 
 public:
 
@@ -95,7 +98,7 @@ public:
    Dictionary();
 
    // Copy constructor.
-   //Dictionary(const Dictionary& D);
+   Dictionary(const Dictionary& D);
 
    // Destructor
    ~Dictionary();
@@ -115,29 +118,29 @@ public:
    // getValue()
    // Returns a reference to the value corresponding to key k.
    // Pre: contains(k)
-   //valType& getValue(keyType k) const;
+   valType& getValue(keyType k) const;
 
    // hasCurrent()
    // Returns true if the current iterator is defined, and returns false 
    // otherwise.
-   //bool hasCurrent() const;
+   bool hasCurrent() const;
 
    // currentKey()
    // Returns the current key.
    // Pre: hasCurrent() 
-   //keyType currentKey() const;
+   keyType currentKey() const;
 
    // currentVal()
    // Returns a reference to the current value.
    // Pre: hasCurrent()
-   //valType& currentVal() const;
+   valType& currentVal() const;
 
 
    // Manipulation procedures -------------------------------------------------
 
    // clear()
    // Resets this Dictionary to the empty state, containing no pairs.
-   //void clear();
+   void clear();
 
    // setValue()
    // If a pair with key==k exists, overwrites the corresponding value with v, 
@@ -148,31 +151,31 @@ public:
    // Deletes the pair for which key==k. If that pair is current, then current
    // becomes undefined.
    // Pre: contains(k).
-   //void remove(keyType k);
+   void remove(keyType k);
 
    // begin()
    // If non-empty, places current iterator at the first (key, value) pair
    // (as defined by the order operator < on keys), otherwise does nothing. 
-   //void begin();
+   void begin();
 
    // end()
    // If non-empty, places current iterator at the last (key, value) pair
    // (as defined by the order operator < on keys), otherwise does nothing. 
-   //void end();
+   void end();
 
    // next()
    // If the current iterator is not at the last pair, advances current 
    // to the next pair (as defined by the order operator < on keys). If 
    // the current iterator is at the last pair, makes current undefined.
    // Pre: hasCurrent()
-   //void next();
+   void next();
 
    // prev()
    // If the current iterator is not at the first pair, moves current to  
    // the previous pair (as defined by the order operator < on keys). If 
    // the current iterator is at the first pair, makes current undefined.
    // Pre: hasCurrent()
-   //void prev();
+   void prev();
 
 
    // Other Functions ---------------------------------------------------------
@@ -193,7 +196,7 @@ public:
    // equals()
    // Returns true if and only if this Dictionary contains the same (key, value)
    // pairs as Dictionary D.
-   //bool equals(const Dictionary& D) const;
+   bool equals(const Dictionary& D) const;
 
 
    // Overloaded Operators ----------------------------------------------------
@@ -206,12 +209,12 @@ public:
    // operator==()
    // Returns true if and only if Dictionary A equals Dictionary B, as defined
    // by member function equals(). 
-   //friend bool operator==( const Dictionary& A, const Dictionary& B );
+   friend bool operator==( const Dictionary& A, const Dictionary& B );
 
    // operator=()
    // Overwrites the state of this Dictionary with state of D, and returns a
    // reference to this Dictionary.
-   //Dictionary& operator=( const Dictionary& D );
+   Dictionary& operator=( const Dictionary& D );
 
 };
 

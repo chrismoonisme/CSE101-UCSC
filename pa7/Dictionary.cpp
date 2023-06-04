@@ -23,6 +23,31 @@ Dictionary::Node::Node(keyType k, valType v){
    
 }
 
+//transplant
+void Dictionary::transplant(Node* u, Node* v){
+
+  if(u->parent == nullptr){
+  
+    root = v;
+  
+  }else if(u == u->parent->left){
+  
+    u->parent->left = v;
+  
+  }else{
+  
+    u->parent->right = v;
+  
+  }
+  
+  if(v != nullptr){
+  
+    v->parent = u->parent;
+  
+  }
+
+}
+
 //in order print
 void Dictionary::inOrderString(std::string& s, Node* R) const{
 
@@ -62,7 +87,20 @@ void Dictionary::preOrderString(std::string& s, Node* R) const{
 }
 
 //copy
+void Dictionary::preOrderCopy(Node *R){
 
+  if(R!= nullptr ){
+    
+    //printf("copy in key %s\n", R->key.c_str());
+    setValue(R->key, R->val);
+    
+    preOrderCopy(R->left);
+  
+    preOrderCopy(R->right);
+    
+  }
+
+}
 
 //delete in post order
 void Dictionary::postOrderDelete(Node* R){
@@ -82,13 +120,13 @@ void Dictionary::postOrderDelete(Node* R){
 //search for a key
 Dictionary::Node* Dictionary::search(Node* R, keyType k) const{
 
-  if(R == nullptr){
+  //if(R == nullptr){
   
-    return nullptr;
+    //return nullptr;
   
-  }
+  //}
 
-  if(k == R->key){
+  if(R == nullptr || k == R->key){
   
     return R;
     
@@ -98,11 +136,11 @@ Dictionary::Node* Dictionary::search(Node* R, keyType k) const{
   
   }else{
   
-    return search(R->left, k); 
+    return search(R->right, k); 
   
   }
   
-  return nullptr;
+  //return nullptr;
 
 }
 
@@ -110,11 +148,11 @@ Dictionary::Node* Dictionary::search(Node* R, keyType k) const{
 Dictionary::Node* Dictionary::findMin(Node* R){
   
   //if tree rooted at R is empty, return nil
-  if(R->left == nullptr && R->right == nullptr){
+  //if(R->left == nullptr && R->right == nullptr){
   
-    return nullptr;
+    //return nullptr;
   
-  }
+  //}
   
   //else, search for min
   while(R->left != nullptr){
@@ -131,11 +169,11 @@ Dictionary::Node* Dictionary::findMin(Node* R){
 Dictionary::Node* Dictionary::findMax(Node* R){
 
   //if tree rooted at R is empty, return nil
-  if(R->left == nullptr && R->right == nullptr){
+  //if(R->left == nullptr && R->right == nullptr){
   
-    return nullptr;
+    //return nullptr;
   
-  }
+  //}
   
   //else search for max
   while(R->right != nullptr){
@@ -171,6 +209,29 @@ Dictionary::Node* Dictionary::findNext(Node* N){
   
 }
 
+//find prev in order
+Dictionary::Node* Dictionary::findPrev(Node* N){
+  
+  if(N->left != nullptr){
+  
+    return findMax(N->left);
+  
+  }
+  
+  Node *y = N->parent;
+  
+  while(y != nullptr && N == y->left){
+  
+    N = y;
+    
+    y = y->parent;
+  
+  }
+  
+  return y;
+  
+}
+
 
 // Class Constructors & Destructors -------------------------------------------
 
@@ -187,6 +248,25 @@ Dictionary::Dictionary(){
 
 }
 
+//copy
+Dictionary::Dictionary(const Dictionary& D){
+  
+  this->nil = nullptr;
+  
+  this->root = nil;
+  
+  this->num_pairs = 0;
+  
+  this->current = this->root;
+  
+  //printf("started copy\n");
+  
+  
+  preOrderCopy(D.root);
+
+}
+
+
 //delete
 Dictionary::~Dictionary(){
 
@@ -197,6 +277,8 @@ Dictionary::~Dictionary(){
   }
 
 }
+
+// Class Functions -------------------------------------------
 
 //size
 int Dictionary::size() const{
@@ -216,20 +298,81 @@ bool Dictionary::contains(keyType k) const{
   
   return true;
 
+}
+
+//get reference of val of k
+valType& Dictionary::getValue(keyType k) const{
+
+  Node *n = search(root, k);
+  
+  return n->val;
 
 }
 
+//check if current is defined
+bool Dictionary::hasCurrent() const{
+  
+  if(current != nullptr){
+  
+    return true;
+  
+  }
+  
+  return false;
+
+}
+
+//returns reference to current val
+valType& Dictionary::currentVal() const{
+
+  if(hasCurrent() == false){
+  
+    throw std::logic_error("no valid current");
+  
+  }
+  
+  return current->val;
+  
+}
+
+//return current key
+keyType Dictionary::currentKey() const{
+
+  if(hasCurrent() == false){
+  
+    throw std::logic_error("no valid current");
+  
+  }
+
+  return current->key;
+
+}
+
+//clear
+void Dictionary::clear(){
+
+  postOrderDelete(root);
+  
+  num_pairs = 0;
+  
+  root = nullptr;
+  
+  current = root;
+  
+}
 
 //insert or override 
 void Dictionary::setValue(keyType k, valType v){
 
   //if nothing in tree, insert root
-  if(root == nullptr){
+  //if(root == nullptr){
   
-    root = new Node(k, v);
+    //root = new Node(k, v);
+    
+    //num_pairs++;
   
   //if the tree isnt empty
-  }else{
+  //}else{
     
     //search if K already exists in tree
     Node *n = search(root, k);
@@ -248,6 +391,8 @@ void Dictionary::setValue(keyType k, valType v){
       Node *z = new Node(k , v);
       
       //increment stats
+      //printf("k = %s\n", k.c_str());
+      //printf("adding a pair to current pairs, %d\n", num_pairs);
       num_pairs++;
       
       Node *y = nullptr;
@@ -288,7 +433,115 @@ void Dictionary::setValue(keyType k, valType v){
     
     }
   
+  //}
+
+}
+
+void Dictionary::remove(keyType k ){
+
+  num_pairs--;
+
+  Node *z = search(root, k);
+  //printf("searched\n");
+  
+  if(z == current){
+    
+    //printf("current deleted\n");
+    current = nullptr;
+  
   }
+  
+  if(z->left == nullptr){
+    
+    //printf("left\n");
+    transplant(z, z->right);
+
+    delete z;
+  
+  }else if(z->right == nullptr){
+    //printf("right\n");
+    transplant(z, z->left);
+
+    delete z;
+  
+  }else{
+
+    Node *y = findMin(z->right);
+
+    //printf("min key is %s\n", y->key.c_str() );
+    
+    //printf("transplanted\n");
+    
+    if(y->parent != z){
+    
+      printf("if\n");
+      
+      transplant(y, y->right);
+
+      y->right = z->right;
+      
+      y->right->parent = y;
+    
+    }
+    //printf("after if\n");
+
+    transplant(z, y);
+
+    y->left = z->left;
+    
+    y->left->parent = y;
+    
+    delete z;
+
+  }
+
+}
+
+//set beginning
+void Dictionary::begin(){
+
+  if(num_pairs!=0){
+
+    current = findMin(root);
+    
+  }
+
+}
+
+//set beginning
+void Dictionary::end(){
+
+  if(num_pairs!=0){
+  
+    current = findMax(root);
+  
+  }
+
+}
+
+//move current next
+void Dictionary::next(){
+
+  if(hasCurrent() == false){
+  
+    throw std::logic_error("no valid current");
+  
+  }
+
+  current = findNext(current);
+
+}
+
+//move current prev
+void Dictionary::prev(){
+
+  if(hasCurrent() == false){
+  
+    throw std::logic_error("no valid current");
+  
+  }
+
+  current = findPrev(current);
 
 }
 
@@ -312,11 +565,42 @@ std::string Dictionary::pre_string() const{
 
 }
 
+bool Dictionary::equals(const Dictionary& D) const{
+
+  std::string s = "";
+
+  this->inOrderString(s, this->root); 
+  
+  std::string s2 = "";
+  
+  D.inOrderString(s2, D.root); 
+  
+  return s2 == s;
+
+}
+
 std::ostream& operator<<( std::ostream& stream,  Dictionary& D ) {
 
    return stream << D.to_string();
    
 }
+
+bool operator==(const Dictionary& A, const Dictionary& B ){
+   return A.equals(B);
+}
+
+Dictionary& Dictionary::operator=( const Dictionary& D ){
+
+
+  this->clear();
+  
+  this->preOrderCopy(D.root);
+  
+  return *this;
+
+
+}
+
 
 
 

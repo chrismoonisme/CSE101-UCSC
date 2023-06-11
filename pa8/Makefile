@@ -9,9 +9,11 @@
 #------------------------------------------------------------------------------
 
 MAIN           = WordFrequency
+ORDER = Order
 ADT            = Dictionary
 SOURCE         = $(MAIN).cpp
 OBJECT         = $(MAIN).o
+OBJECT1 = $(ORDER).o
 ADT_TEST       = $(ADT)Test
 ADT_SOURCE     = $(ADT).cpp
 ADT_OBJECT     = $(ADT).o
@@ -23,6 +25,11 @@ MEMCHECK       = valgrind --leak-check=full
 
 $(MAIN): $(OBJECT) $(ADT_OBJECT)
 	$(LINK) $(MAIN) $(OBJECT) $(ADT_OBJECT)
+	
+$(ORDER): $(OBJECT1) $(ADT_OBJECT)
+	$(LINK) $(ORDER) $(OBJECT1) $(ADT_OBJECT)
+	
+
 
 $(ADT_TEST): $(ADT_TEST).o $(ADT_OBJECT)
 	$(LINK) $(ADT_TEST) $(ADT_TEST).o $(ADT_OBJECT)
@@ -37,7 +44,7 @@ $(ADT_OBJECT): $(ADT_SOURCE) $(ADT_HEADER)
 	$(COMPILE) $(ADT_SOURCE)
 
 clean:
-	$(REMOVE) $(MAIN) $(ADT_TEST) $(OBJECT) $(ADT_TEST).o $(ADT_OBJECT)
+	$(REMOVE) $(MAIN) $(ORDER) $(ADT_TEST) $(OBJECT) $(OBJECT1) $(ADT_TEST).o $(ADT_OBJECT)
 
 $(MAIN)Check: $(MAIN)
 	$(MEMCHECK) $(MAIN) Gutenberg myGutenberg-out
